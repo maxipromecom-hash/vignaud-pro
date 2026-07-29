@@ -1,0 +1,148 @@
+import os
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
+
+APP_NAME = "Renombrador Vignaud PRO"
+VERSION = "0.1"
+
+
+class App(ctk.CTk):
+
+    def __init__(self):
+        super().__init__()
+
+        self.title(f"{APP_NAME} v{VERSION}")
+        self.geometry("800x520")
+        self.resizable(False, False)
+
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("blue")
+
+        self.folder = ""
+
+        self.create_widgets()
+
+    def create_widgets(self):
+
+        titulo = ctk.CTkLabel(
+            self,
+            text=APP_NAME,
+            font=("Segoe UI", 28, "bold")
+        )
+
+        titulo.pack(pady=20)
+
+        self.lbl_folder = ctk.CTkLabel(
+            self,
+            text="No hay carpeta seleccionada",
+            width=650
+        )
+
+        self.lbl_folder.pack()
+
+        ctk.CTkButton(
+            self,
+            text="Seleccionar carpeta",
+            command=self.select_folder,
+            width=220,
+            height=40
+        ).pack(pady=15)
+
+        self.lbl_total = ctk.CTkLabel(
+            self,
+            text="Imágenes encontradas: 0",
+            font=("Segoe UI", 16)
+        )
+
+        self.lbl_total.pack(pady=10)
+
+        self.progress = ctk.CTkProgressBar(
+            self,
+            width=600
+        )
+
+        self.progress.pack(pady=20)
+
+        self.progress.set(0)
+
+        self.console = ctk.CTkTextbox(
+            self,
+            width=720,
+            height=180
+        )
+
+        self.console.pack(pady=15)
+
+        self.console.insert("end", "Sistema iniciado...\n")
+
+        ctk.CTkButton(
+            self,
+            text="Procesar",
+            width=220,
+            height=45,
+            command=self.process
+        ).pack(pady=10)
+
+    def log(self, text):
+        self.console.insert("end", text + "\n")
+        self.console.see("end")
+
+    def select_folder(self):
+
+        folder = filedialog.askdirectory()
+
+        if not folder:
+            return
+
+        self.folder = folder
+
+        self.lbl_folder.configure(text=folder)
+
+        total = 0
+
+        for f in os.listdir(folder):
+
+            if f.lower().endswith(
+                (".jpg", ".jpeg", ".png", ".bmp", ".webp")
+            ):
+                total += 1
+
+        self.lbl_total.configure(
+            text=f"Imágenes encontradas: {total}"
+        )
+
+        self.log(f"Carpeta seleccionada: {folder}")
+        self.log(f"Imágenes detectadas: {total}")
+
+    def process(self):
+
+        if self.folder == "":
+            messagebox.showwarning(
+                "Aviso",
+                "Seleccione una carpeta."
+            )
+            return
+
+        self.log("Preparando procesamiento...")
+
+        self.progress.set(0.10)
+
+        self.after(500, lambda: self.progress.set(0.25))
+        self.after(1000, lambda: self.progress.set(0.40))
+        self.after(1500, lambda: self.progress.set(0.60))
+        self.after(2000, lambda: self.progress.set(0.80))
+        self.after(2500, lambda: self.progress.set(1.00))
+
+        self.after(
+            2600,
+            lambda: self.log(
+                "Versión 0.1 lista para integrar OCR."
+            )
+        )
+
+
+if __name__ == "__main__":
+
+    app = App()
+
+    app.mainloop()
