@@ -5,35 +5,90 @@ ctk.set_default_color_theme("blue")
 
 
 def crear_ventana():
-
     ventana = ctk.CTk()
 
     ventana.title("Vignaud PRO 2.0")
-
-    ventana.geometry("900x600")
+    ventana.geometry("900x650")
+    ventana.resizable(False, False)
 
     titulo = ctk.CTkLabel(
         ventana,
         text="VIGNAUD PRO 2.0",
-        font=("Segoe UI", 28, "bold")
+        font=("Segoe UI", 30, "bold")
     )
+    titulo.pack(pady=(20, 10))
 
-    titulo.pack(pady=25)
+    # ----- API -----
+    api_label = ctk.CTkLabel(ventana, text="API OCR")
+    api_label.pack(anchor="w", padx=20)
 
-    estado = ctk.CTkLabel(
+    api_entry = ctk.CTkEntry(
         ventana,
-        text="Versión 0.1.0 Foundation",
-        font=("Segoe UI", 16)
+        width=850,
+        placeholder_text="Ingrese aquí su API OCR..."
     )
+    api_entry.pack(padx=20, pady=(0, 15))
 
-    estado.pack()
+    # ----- Carpeta -----
+    carpeta_label = ctk.CTkLabel(ventana, text="Carpeta de imágenes")
+    carpeta_label.pack(anchor="w", padx=20)
 
-    boton = ctk.CTkButton(
+    marco = ctk.CTkFrame(ventana)
+    marco.pack(fill="x", padx=20)
+
+    carpeta = ctk.CTkEntry(
+        marco,
+        width=700,
+        placeholder_text="Seleccione una carpeta..."
+    )
+    carpeta.pack(side="left", padx=10, pady=10)
+
+    boton_examinar = ctk.CTkButton(
+        marco,
+        text="Examinar"
+    )
+    boton_examinar.pack(side="right", padx=10)
+
+    # ----- Contador -----
+    contador = ctk.CTkLabel(
         ventana,
-        text="Salir",
-        command=ventana.destroy
+        text="Imágenes encontradas: 0",
+        font=("Segoe UI", 15)
     )
+    contador.pack(anchor="w", padx=20, pady=(20, 5))
 
-    boton.pack(pady=40)
+    # ----- Barra de progreso -----
+    progreso = ctk.CTkProgressBar(ventana, width=850)
+    progreso.pack(padx=20)
+    progreso.set(0)
+
+    # ----- Consola -----
+    consola = ctk.CTkTextbox(
+        ventana,
+        width=850,
+        height=220
+    )
+    consola.pack(padx=20, pady=20)
+
+    consola.insert("end", "Vignaud PRO iniciado correctamente...\n")
+    consola.insert("end", "Esperando selección de carpeta...\n")
+
+    # ----- Botones -----
+    botones = ctk.CTkFrame(ventana)
+    botones.pack(pady=10)
+
+    analizar = ctk.CTkButton(
+        botones,
+        text="Analizar",
+        width=180
+    )
+    analizar.pack(side="left", padx=20)
+
+    renombrar = ctk.CTkButton(
+        botones,
+        text="Renombrar",
+        width=180
+    )
+    renombrar.pack(side="left", padx=20)
 
     ventana.mainloop()
