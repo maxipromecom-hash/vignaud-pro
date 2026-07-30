@@ -1,4 +1,4 @@
-name: Compilar EXE
+name: Compilar Vignaud PRO
 
 on:
   push:
@@ -24,18 +24,29 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements.txt
           pip install pyinstaller
 
-          if (Test-Path "requirements.txt") {
-          pip install -r requirements.txt
-          }
-
-      - name: Crear EXE
+      - name: Compilar aplicación
+        shell: pwsh
         run: |
-          pyinstaller --onefile --name Renombrador_Vignaud main.py
+          pyinstaller `
+            --noconfirm `
+            --windowed `
+            --onedir `
+            --clean `
+            --name VignaudPRO `
+            main.py
 
-      - name: Subir EXE
+      - name: Comprimir aplicación
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path dist/VignaudPRO/* `
+            -DestinationPath dist/VignaudPRO.zip
+
+      - name: Publicar ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Renombrador_Vignaud
-          path: dist/Renombrador_Vignaud.exe
+          name: VignaudPRO
+          path: dist/VignaudPRO.zip
