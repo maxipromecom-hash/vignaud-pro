@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+
+build/
+dist/
+
+logs/*
+output/*
+
+*.spec
+
+.vscode/
+
+.env
+
+config/local.ini
