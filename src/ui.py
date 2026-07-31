@@ -2,9 +2,6 @@ from src.ocr import leer_imagen
 import customtkinter as ctk
 from tkinter import filedialog
 import os
-import customtkinter as ctk
-from tkinter import filedialog
-import os
 
 imagenes_analizadas = []
 
@@ -61,7 +58,16 @@ def examinar(carpeta_entry, contador_label, consola):
 # ===============================
 # ANALIZAR
 # ===============================
-def analizar(carpeta_entry, progreso, consola, ventana):
+def analizar(api_entry, carpeta_entry, progresso, consola, ventana):
+    api = api_entry.get().strip()
+
+    if api == "":
+    consola.insert(
+        "end",
+        "\nDebe ingresar una API OCR.\n"
+    )
+    consola.see("end")
+    return
 
     carpeta = carpeta_entry.get().strip()
 
@@ -107,6 +113,10 @@ def analizar(carpeta_entry, progreso, consola, ventana):
     for i, imagen in enumerate(imagenes, start=1):
 
         progreso.set(i / total)
+        ruta = os.path.join(carpeta, imagen)
+
+        texto = leer_imagen(api, ruta)
+                    
 
         consola.insert(
             "end",
@@ -114,25 +124,48 @@ def analizar(carpeta_entry, progreso, consola, ventana):
         )
         imagenes_analizadas.append({
 
-    "archivo": imagen,
+            "archivo": imagen,
 
-    "ruta": os.path.join(carpeta, imagen),
+            "ruta": os.path.join(carpeta, imagen),
 
-    "texto": "",
+            "texto": texto,
 
-    "nuevo_nombre": ""
+            "nuevo_nombre": ""
 
     })
+        consola.insert(
+    "end",
+    f"[{i}/{total}] {imagen}\n"
+    )
+
+    if texto:
+
+        consola.insert(
+            "end",
+            f"Texto: {texto[:120]}\n\n"
+    )
+
+    else:
+
+        consola.insert(
+            "end",
+            "Sin texto reconocido.\n\n"
+        )
+        
        
 
-        consola.see("end")
-        ventana.update()
+    consola.see("end")
+    ventana.update()
 
     consola.insert(
     "end",
     f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
     )
-
+    consola.insert(
+    "end",
+    "\nAnálisis finalizado correctamente.\n"
+    )
+    
     consola.see("end")
 
 
@@ -260,6 +293,7 @@ def crear_ventana():
         text="Analizar",
         width=180,
         command=lambda: analizar(
+            api_entry,
             carpeta,
             progreso,
             consola,
