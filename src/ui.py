@@ -124,7 +124,7 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
         )
         imagenes_analizadas.append({
             "archivo": imagen,
-            "ruta": os.path.join(carpeta, imagen),
+            "ruta": ruta,
             "texto": texto,
             "nuevo_nombre": ""
         })
@@ -149,17 +149,18 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
 
         consola.see("end")
         ventana.update()
+        
+    consola.insert(
+        "end",
+        f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
+    )
 
-consola.insert(
-"end",
-f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
-)
-consola.insert(
-"end",
-"\nAnálisis finalizado correctamente.\n"
-)
+    consola.insert(
+        "end",
+        "\nAnálisis finalizado correctamente.\n"
+    )
     
-consola.see("end")
+    consola.see("end")
 
 
 # ===============================
