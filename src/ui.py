@@ -1,6 +1,11 @@
 import customtkinter as ctk
 from tkinter import filedialog
 import os
+import customtkinter as ctk
+from tkinter import filedialog
+import os
+
+imagenes_analizadas = []
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -32,6 +37,8 @@ def examinar(carpeta_entry, contador_label, consola):
         f for f in os.listdir(carpeta)
         if f.lower().endswith(extensiones)
     ]
+    global imagenes_analizadas
+    imagenes_analizadas.clear()
 
     contador_label.configure(
         text=f"Imágenes encontradas: {len(imagenes)}"
@@ -104,13 +111,25 @@ def analizar(carpeta_entry, progreso, consola, ventana):
             "end",
             f"[{i}/{total}] Analizando: {imagen}\n"
         )
+        imagenes_analizadas.append({
+
+    "archivo": imagen,
+
+    "ruta": os.path.join(carpeta, imagen),
+
+    "texto": "",
+
+    "nuevo_nombre": ""
+
+    })
+       
 
         consola.see("end")
         ventana.update()
 
     consola.insert(
-        "end",
-        "\nAnálisis finalizado correctamente.\n"
+    "end",
+    f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
     )
 
     consola.see("end")
