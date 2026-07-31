@@ -95,7 +95,7 @@ def crear_ventana():
         consola
     )
 )
-    )
+    
     boton_examinar.pack(side="right", padx=10)
 
     # ----- Contador -----
