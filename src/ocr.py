@@ -1,10 +1,9 @@
 import requests
 
-
 URL = "https://api.ocr.space/parse/image"
 
 
-def leer_imagen(ruta_imagen, api_key):
+def leer_imagen(api_key, ruta_imagen):
 
     try:
 
@@ -23,13 +22,21 @@ def leer_imagen(ruta_imagen, api_key):
             )
 
         datos = respuesta.json()
+        print("\n================ OCR =================")
+        print(datos)
+        print("======================================\n")
 
         if datos["IsErroredOnProcessing"]:
-
             return ""
 
-        return datos["ParsedResults"][0]["ParsedText"]
+        if "ParsedResults" not in datos:
+            return ""
 
-    except Exception:
+        if len(datos["ParsedResults"]) == 0:
+            return ""
 
+        return datos["ParsedResults"][0].get("ParsedText", "")
+
+    except Exception as e:
+        print("ERROR OCR:", e)
         return ""
