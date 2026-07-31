@@ -1,7 +1,50 @@
 import customtkinter as ctk
+from tkinter import filedialog
+import os
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+def examinar(carpeta_entry, contador_label, consola):
+
+    carpeta = filedialog.askdirectory()
+
+    if not carpeta:
+        return
+
+    carpeta_entry.delete(0, "end")
+    carpeta_entry.insert(0, carpeta)
+
+    extensiones = (
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".bmp",
+        ".tif",
+        ".tiff"
+    )
+
+    cantidad = 0
+
+    for archivo in os.listdir(carpeta):
+
+        if archivo.lower().endswith(extensiones):
+            cantidad += 1
+
+    contador_label.configure(
+        text=f"Imágenes encontradas: {cantidad}"
+    )
+
+    consola.insert(
+        "end",
+        f"\nCarpeta seleccionada:\n{carpeta}\n"
+    )
+
+    consola.insert(
+        "end",
+        f"Se encontraron {cantidad} imágenes.\n"
+    )
+
+    consola.see("end")
 
 
 def crear_ventana():
@@ -44,8 +87,14 @@ def crear_ventana():
     carpeta.pack(side="left", padx=10, pady=10)
 
     boton_examinar = ctk.CTkButton(
-        marco,
-        text="Examinar"
+    marco,
+    text="Examinar",
+    command=lambda: examinar(
+        carpeta,
+        contador,
+        consola
+    )
+)
     )
     boton_examinar.pack(side="right", padx=10)
 
