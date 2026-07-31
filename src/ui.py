@@ -140,10 +140,11 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
             consola.insert(
                 "end",
                 f"Texto: {texto[:120]}\n\n"
+            )
+
             consola.insert(
                 "end",
                 f"Nombre sugerido: {nuevo_nombre}\n\n"
-
             )
 
         else:
@@ -151,7 +152,6 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
                 "end",
                 "Sin texto reconocido.\n\n"
             )
-        
        
 
         consola.see("end")
