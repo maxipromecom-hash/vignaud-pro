@@ -4,61 +4,12 @@ import os
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+
+
+# ===============================
+# EXAMINAR CARPETA
+# ===============================
 def examinar(carpeta_entry, contador_label, consola):
-    def analizar(carpeta_entry, progreso, consola):
-
-    carpeta = carpeta_entry.get().strip()
-
-    if not carpeta:
-        consola.insert("end", "\nNo hay una carpeta seleccionada.\n")
-        consola.see("end")
-        return
-
-    extensiones = (
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".bmp",
-        ".tif",
-        ".tiff"
-    )
-
-    imagenes = [
-        archivo
-        for archivo in os.listdir(carpeta)
-        if archivo.lower().endswith(extensiones)
-    ]
-
-    total = len(imagenes)
-
-    if total == 0:
-        consola.insert("end", "\nNo se encontraron imágenes.\n")
-        consola.see("end")
-        return
-
-    progreso.set(0)
-
-    consola.insert("end", "\n===== INICIANDO ANÁLISIS =====\n")
-
-    for i, imagen in enumerate(imagenes, start=1):
-
-        porcentaje = i / total
-        progreso.set(porcentaje)
-
-        consola.insert(
-            "end",
-            f"[{i}/{total}] {imagen}\n"
-        )
-
-        consola.see("end")
-        ventana.update()
-
-    consola.insert(
-        "end",
-        "\nAnálisis finalizado correctamente.\n"
-    )
-
-    consola.see("end")
 
     carpeta = filedialog.askdirectory()
 
@@ -77,15 +28,13 @@ def examinar(carpeta_entry, contador_label, consola):
         ".tiff"
     )
 
-    cantidad = 0
-
-    for archivo in os.listdir(carpeta):
-
-        if archivo.lower().endswith(extensiones):
-            cantidad += 1
+    imagenes = [
+        f for f in os.listdir(carpeta)
+        if f.lower().endswith(extensiones)
+    ]
 
     contador_label.configure(
-        text=f"Imágenes encontradas: {cantidad}"
+        text=f"Imágenes encontradas: {len(imagenes)}"
     )
 
     consola.insert(
@@ -95,14 +44,84 @@ def examinar(carpeta_entry, contador_label, consola):
 
     consola.insert(
         "end",
-        f"Se encontraron {cantidad} imágenes.\n"
+        f"Se encontraron {len(imagenes)} imágenes.\n"
     )
 
     consola.see("end")
 
 
+# ===============================
+# ANALIZAR
+# ===============================
+def analizar(carpeta_entry, progreso, consola, ventana):
+
+    carpeta = carpeta_entry.get().strip()
+
+    if carpeta == "":
+        consola.insert(
+            "end",
+            "\nDebe seleccionar una carpeta primero.\n"
+        )
+        consola.see("end")
+        return
+
+    extensiones = (
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".bmp",
+        ".tif",
+        ".tiff"
+    )
+
+    imagenes = [
+        f for f in os.listdir(carpeta)
+        if f.lower().endswith(extensiones)
+    ]
+
+    total = len(imagenes)
+
+    if total == 0:
+        consola.insert(
+            "end",
+            "\nNo se encontraron imágenes.\n"
+        )
+        consola.see("end")
+        return
+
+    progresso = 0
+    progreso.set(0)
+
+    consola.insert(
+        "end",
+        "\n========== INICIANDO ANÁLISIS ==========\n\n"
+    )
+
+    for i, imagen in enumerate(imagenes, start=1):
+
+        progreso.set(i / total)
+
+        consola.insert(
+            "end",
+            f"[{i}/{total}] Analizando: {imagen}\n"
+        )
+
+        consola.see("end")
+        ventana.update()
+
+    consola.insert(
+        "end",
+        "\nAnálisis finalizado correctamente.\n"
+    )
+
+    consola.see("end")
+
+
+# ===============================
+# VENTANA PRINCIPAL
+# ===============================
 def crear_ventana():
-    global ventana
+
     ventana = ctk.CTk()
 
     ventana.title("Vignaud PRO 2.0")
@@ -116,8 +135,12 @@ def crear_ventana():
     )
     titulo.pack(pady=(20, 10))
 
-    # ----- API -----
-    api_label = ctk.CTkLabel(ventana, text="API OCR")
+    # API
+
+    api_label = ctk.CTkLabel(
+        ventana,
+        text="API OCR"
+    )
     api_label.pack(anchor="w", padx=20)
 
     api_entry = ctk.CTkEntry(
@@ -127,8 +150,12 @@ def crear_ventana():
     )
     api_entry.pack(padx=20, pady=(0, 15))
 
-    # ----- Carpeta -----
-    carpeta_label = ctk.CTkLabel(ventana, text="Carpeta de imágenes")
+    # Carpeta
+
+    carpeta_label = ctk.CTkLabel(
+        ventana,
+        text="Carpeta de imágenes"
+    )
     carpeta_label.pack(anchor="w", padx=20)
 
     marco = ctk.CTkFrame(ventana)
@@ -139,65 +166,102 @@ def crear_ventana():
         width=700,
         placeholder_text="Seleccione una carpeta..."
     )
-    carpeta.pack(side="left", padx=10, pady=10)
 
-    boton_examinar = ctk.CTkButton(
-    marco,
-    text="Examinar",
-    command=lambda: examinar(
-        carpeta,
-        contador,
-        consola
+    carpeta.pack(
+        side="left",
+        padx=10,
+        pady=10
     )
-)
-    
-    boton_examinar.pack(side="right", padx=10)
 
-    # ----- Contador -----
     contador = ctk.CTkLabel(
         ventana,
         text="Imágenes encontradas: 0",
         font=("Segoe UI", 15)
     )
-    contador.pack(anchor="w", padx=20, pady=(20, 5))
 
-    # ----- Barra de progreso -----
-    progreso = ctk.CTkProgressBar(ventana, width=850)
-    progreso.pack(padx=20)
-    progreso.set(0)
-
-    # ----- Consola -----
     consola = ctk.CTkTextbox(
         ventana,
         width=850,
         height=220
     )
-    consola.pack(padx=20, pady=20)
 
-    consola.insert("end", "Vignaud PRO iniciado correctamente...\n")
-    consola.insert("end", "Esperando selección de carpeta...\n")
+    progresso = ctk.CTkProgressBar(
+        ventana,
+        width=850
+    )
 
-    # ----- Botones -----
-    botones = ctk.CTkFrame(ventana)
+    progresso.set(0)
+
+    boton_examinar = ctk.CTkButton(
+        marco,
+        text="Examinar",
+        command=lambda: examinar(
+            carpeta,
+            contador,
+            consola
+        )
+    )
+
+    boton_examinar.pack(
+        side="right",
+        padx=10
+    )
+
+    contador.pack(
+        anchor="w",
+        padx=20,
+        pady=(20, 5)
+    )
+
+    progresso.pack(padx=20)
+
+    consola.pack(
+        padx=20,
+        pady=20
+    )
+
+    consola.insert(
+        "end",
+        "Vignaud PRO iniciado correctamente...\n"
+    )
+
+    consola.insert(
+        "end",
+        "Esperando selección de carpeta...\n"
+    )
+
+    botones = ctk.CTkFrame(
+        ventana
+    )
+
     botones.pack(pady=10)
 
-    analizar = ctk.CTkButton(
-    botones,
-    text="Analizar",
-    width=180,
-    command=lambda: analizar(
-        carpeta,
-        progreso,
-        consola
+    boton_analizar = ctk.CTkButton(
+        botones,
+        text="Analizar",
+        width=180,
+        command=lambda: analizar(
+            carpeta,
+            progresso,
+            consola,
+            ventana
+        )
     )
-)
-    analizar.pack(side="left", padx=20)
 
-    renombrar = ctk.CTkButton(
+    boton_analizar.pack(
+        side="left",
+        padx=20
+    )
+
+    boton_renombrar = ctk.CTkButton(
         botones,
         text="Renombrar",
         width=180
     )
-    renombrar.pack(side="left", padx=20)
 
-    ventana.mainloop()
+    boton_renombrar.pack(
+        side="left",
+        padx=20
+    )
+
+    ventana.mainloop()f
