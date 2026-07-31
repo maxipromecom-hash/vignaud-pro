@@ -58,16 +58,16 @@ def examinar(carpeta_entry, contador_label, consola):
 # ===============================
 # ANALIZAR
 # ===============================
-def analizar(api_entry, carpeta_entry, progresso, consola, ventana):
+def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
     api = api_entry.get().strip()
 
     if api == "":
-    consola.insert(
-        "end",
-        "\nDebe ingresar una API OCR.\n"
-    )
-    consola.see("end")
-    return
+        consola.insert(
+            "end",
+            "\nDebe ingresar una API OCR.\n"
+        )
+        consola.see("end")
+        return
 
     carpeta = carpeta_entry.get().strip()
 
@@ -123,50 +123,43 @@ def analizar(api_entry, carpeta_entry, progresso, consola, ventana):
             f"[{i}/{total}] Analizando: {imagen}\n"
         )
         imagenes_analizadas.append({
-
             "archivo": imagen,
-
             "ruta": os.path.join(carpeta, imagen),
-
             "texto": texto,
-
             "nuevo_nombre": ""
-
-    })
-        consola.insert(
-    "end",
-    f"[{i}/{total}] {imagen}\n"
-    )
-
-    if texto:
-
+        })
         consola.insert(
             "end",
-            f"Texto: {texto[:120]}\n\n"
-    )
-
-    else:
-
-        consola.insert(
-            "end",
-            "Sin texto reconocido.\n\n"
+            f"[{i}/{total}] {imagen}\n"
         )
+
+        if texto:
+            consola.insert(
+                "end",
+                f"Texto: {texto[:120]}\n\n"
+            )
+
+        else:
+            consola.insert(
+                "end",
+                "Sin texto reconocido.\n\n"
+            )
         
        
 
-    consola.see("end")
-    ventana.update()
+        consola.see("end")
+        ventana.update()
 
-    consola.insert(
-    "end",
-    f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
-    )
-    consola.insert(
-    "end",
-    "\nAnálisis finalizado correctamente.\n"
-    )
+consola.insert(
+"end",
+f"\nSe almacenaron {len(imagenes_analizadas)} imágenes para OCR.\n"
+)
+consola.insert(
+"end",
+"\nAnálisis finalizado correctamente.\n"
+)
     
-    consola.see("end")
+consola.see("end")
 
 
 # ===============================
