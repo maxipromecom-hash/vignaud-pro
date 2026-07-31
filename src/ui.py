@@ -5,6 +5,60 @@ import os
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 def examinar(carpeta_entry, contador_label, consola):
+    def analizar(carpeta_entry, progreso, consola):
+
+    carpeta = carpeta_entry.get().strip()
+
+    if not carpeta:
+        consola.insert("end", "\nNo hay una carpeta seleccionada.\n")
+        consola.see("end")
+        return
+
+    extensiones = (
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".bmp",
+        ".tif",
+        ".tiff"
+    )
+
+    imagenes = [
+        archivo
+        for archivo in os.listdir(carpeta)
+        if archivo.lower().endswith(extensiones)
+    ]
+
+    total = len(imagenes)
+
+    if total == 0:
+        consola.insert("end", "\nNo se encontraron imágenes.\n")
+        consola.see("end")
+        return
+
+    progreso.set(0)
+
+    consola.insert("end", "\n===== INICIANDO ANÁLISIS =====\n")
+
+    for i, imagen in enumerate(imagenes, start=1):
+
+        porcentaje = i / total
+        progreso.set(porcentaje)
+
+        consola.insert(
+            "end",
+            f"[{i}/{total}] {imagen}\n"
+        )
+
+        consola.see("end")
+        ventana.update()
+
+    consola.insert(
+        "end",
+        "\nAnálisis finalizado correctamente.\n"
+    )
+
+    consola.see("end")
 
     carpeta = filedialog.askdirectory()
 
@@ -48,6 +102,7 @@ def examinar(carpeta_entry, contador_label, consola):
 
 
 def crear_ventana():
+    global ventana
     ventana = ctk.CTk()
 
     ventana.title("Vignaud PRO 2.0")
@@ -127,10 +182,15 @@ def crear_ventana():
     botones.pack(pady=10)
 
     analizar = ctk.CTkButton(
-        botones,
-        text="Analizar",
-        width=180
+    botones,
+    text="Analizar",
+    width=180,
+    command=lambda: analizar(
+        carpeta,
+        progreso,
+        consola
     )
+)
     analizar.pack(side="left", padx=20)
 
     renombrar = ctk.CTkButton(
