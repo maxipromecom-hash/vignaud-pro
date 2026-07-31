@@ -89,7 +89,6 @@ def analizar(carpeta_entry, progreso, consola, ventana):
         consola.see("end")
         return
 
-    progresso = 0
     progreso.set(0)
 
     consola.insert(
@@ -185,12 +184,12 @@ def crear_ventana():
         height=220
     )
 
-    progresso = ctk.CTkProgressBar(
+    progreso = ctk.CTkProgressBar(
         ventana,
         width=850
     )
 
-    progresso.set(0)
+    progreso.set(0)
 
     boton_examinar = ctk.CTkButton(
         marco,
@@ -213,7 +212,7 @@ def crear_ventana():
         pady=(20, 5)
     )
 
-    progresso.pack(padx=20)
+    progreso.pack(padx=20)
 
     consola.pack(
         padx=20,
@@ -242,7 +241,7 @@ def crear_ventana():
         width=180,
         command=lambda: analizar(
             carpeta,
-            progresso,
+            progreso,
             consola,
             ventana
         )
@@ -264,4 +263,4 @@ def crear_ventana():
         padx=20
     )
 
-    ventana.mainloop()f
+    ventana.mainloop()
