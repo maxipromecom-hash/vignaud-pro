@@ -1,3 +1,4 @@
+from src.parser import generar_nombre
 from src.ocr import leer_imagen
 import customtkinter as ctk
 from tkinter import filedialog
@@ -122,11 +123,13 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
             "end",
             f"[{i}/{total}] Analizando: {imagen}\n"
         )
+        nuevo_nombre = generar_nombre(texto)
+
         imagenes_analizadas.append({
             "archivo": imagen,
-            "ruta": ruta,
+            "ruta": os.path.join(carpeta, imagen),
             "texto": texto,
-            "nuevo_nombre": ""
+            "nuevo_nombre": nuevo_nombre
         })
         consola.insert(
             "end",
@@ -137,6 +140,10 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
             consola.insert(
                 "end",
                 f"Texto: {texto[:120]}\n\n"
+            consola.insert(
+                "end",
+                f"Nombre sugerido: {nuevo_nombre}\n\n"
+
             )
 
         else:
