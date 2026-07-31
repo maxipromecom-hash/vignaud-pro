@@ -1,3 +1,4 @@
+from src.ocr import leer_imagen
 import customtkinter as ctk
 from tkinter import filedialog
 import os
