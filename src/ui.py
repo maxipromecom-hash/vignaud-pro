@@ -168,6 +168,104 @@ def analizar(api_entry, carpeta_entry, progreso, consola, ventana):
     )
     
     consola.see("end")
+# ===============================
+# RENOMBRAR IMÁGENES
+# ===============================
+def renombrar_imagenes(consola, ventana):
+
+    if not imagenes_analizadas:
+        consola.insert(
+            "end",
+            "\nNo hay imágenes analizadas para renombrar.\n"
+        )
+        consola.see("end")
+        return
+
+    consola.insert(
+        "end",
+        "\n========== INICIANDO RENOMBRADO ==========\n\n"
+    )
+
+    renombradas = 0
+    errores = 0
+
+    for imagen in imagenes_analizadas:
+
+        ruta_original = imagen["ruta"]
+        nuevo_nombre = imagen["nuevo_nombre"]
+
+        if not nuevo_nombre:
+            consola.insert(
+                "end",
+                f"Sin nombre para: {imagen['archivo']}\n"
+            )
+            continue
+
+        extension = os.path.splitext(ruta_original)[1]
+
+        nuevo_archivo = nuevo_nombre + extension
+
+        nueva_ruta = os.path.join(
+            os.path.dirname(ruta_original),
+            nuevo_archivo
+        )
+
+        try:
+
+            if os.path.exists(nueva_ruta):
+
+                consola.insert(
+                    "end",
+                    f"YA EXISTE: {nuevo_archivo}\n"
+                )
+
+                continue
+
+            os.rename(
+                ruta_original,
+                nueva_ruta
+            )
+
+            consola.insert(
+                "end",
+                f"RENOMBRADO:\n"
+                f"{imagen['archivo']}\n"
+                f"→ {nuevo_archivo}\n\n"
+            )
+
+            imagen["archivo"] = nuevo_archivo
+            imagen["ruta"] = nueva_ruta
+
+            renombradas += 1
+
+        except Exception as e:
+
+            consola.insert(
+                "end",
+                f"ERROR al renombrar {imagen['archivo']}: {e}\n"
+            )
+
+            errores += 1
+
+        consola.see("end")
+        ventana.update()
+
+    consola.insert(
+        "end",
+        "\n========== RENOMBRADO FINALIZADO ==========\n"
+    )
+
+    consola.insert(
+        "end",
+        f"Imágenes renombradas: {renombradas}\n"
+    )
+
+    consola.insert(
+        "end",
+        f"Errores: {errores}\n"
+    )
+
+    consola.see("end")
 
 
 # ===============================
@@ -308,10 +406,14 @@ def crear_ventana():
     )
 
     boton_renombrar = ctk.CTkButton(
-        botones,
-        text="Renombrar",
-        width=180
+    botones,
+    text="Renombrar",
+    width=180,
+    command=lambda: renombrar_imagenes(
+        consola,
+        ventana
     )
+)
 
     boton_renombrar.pack(
         side="left",
