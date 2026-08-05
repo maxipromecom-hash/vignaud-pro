@@ -1,7 +1,10 @@
 import re
 
 
-# Marcas conocidas
+# ============================================================
+# MARCAS CONOCIDAS
+# ============================================================
+
 MARCAS = [
     "HONDA",
     "YAMAHA",
@@ -21,10 +24,13 @@ MARCAS = [
     "CERRO",
     "APPIA",
     "MAVERICK",
-    "KELLER",
     "MOTO MEL"
 ]
 
+
+# ============================================================
+# BUSCAR MARCA
+# ============================================================
 
 def buscar_marca(texto):
 
@@ -37,6 +43,10 @@ def buscar_marca(texto):
 
     return "SINMARCA"
 
+
+# ============================================================
+# BUSCAR MODELO
+# ============================================================
 
 def buscar_modelo(texto):
 
@@ -51,6 +61,10 @@ def buscar_modelo(texto):
 
     return ""
 
+
+# ============================================================
+# BUSCAR DOMINIO
+# ============================================================
 
 def buscar_dominio(texto):
 
@@ -81,21 +95,62 @@ def buscar_dominio(texto):
     return ""
 
 
+# ============================================================
+# BUSCAR REGISTRO
+# ============================================================
+
 def buscar_expediente(texto):
 
     texto = texto.upper()
 
-    patron = r"[A-Z]-\d+/\d+"
+    # --------------------------------------------------------
+    # Acepta:
+    #
+    # R 1234/26
+    # R-1234/26
+    # R1234/26
+    # r-1234/26
+    # R-1234/25
+    #
+    # También acepta espacios alrededor.
+    # --------------------------------------------------------
+
+    patron = r"\bR\s*[-]?\s*(\d{1,6})\s*[/\-]\s*(\d{2})\b"
 
     encontrado = re.search(patron, texto)
 
     if encontrado:
-        return encontrado.group(0).replace("/", "-")
+
+        numero = encontrado.group(1)
+        año = encontrado.group(2)
+
+        return f"R-{numero}-{año}"
 
     return ""
 
 
+# ============================================================
+# GENERAR NOMBRE
+# ============================================================
+
 def generar_nombre(texto):
+
+    if not texto:
+        return "SIN_IDENTIFICAR"
+
+    # --------------------------------------------------------
+    # PRIMERO BUSCAMOS EL REGISTRO
+    #
+    # Esto es importante.
+    #
+    # El Registro tiene prioridad sobre el modelo.
+    # --------------------------------------------------------
+
+    expediente = buscar_expediente(texto)
+
+    # --------------------------------------------------------
+    # Después buscamos el resto de la información.
+    # --------------------------------------------------------
 
     marca = buscar_marca(texto)
 
@@ -103,21 +158,41 @@ def generar_nombre(texto):
 
     dominio = buscar_dominio(texto)
 
-    expediente = buscar_expediente(texto)
-
     partes = []
+
+    # --------------------------------------------------------
+    # MARCA
+    # --------------------------------------------------------
 
     if marca != "SINMARCA":
         partes.append(marca)
 
+    # --------------------------------------------------------
+    # MODELO
+    # --------------------------------------------------------
+
     if modelo:
         partes.append(modelo)
+
+    # --------------------------------------------------------
+    # DOMINIO
+    # --------------------------------------------------------
 
     if dominio:
         partes.append(dominio)
 
+    # --------------------------------------------------------
+    # REGISTRO
+    #
+    # Siempre al final.
+    # --------------------------------------------------------
+
     if expediente:
         partes.append(expediente)
+
+    # --------------------------------------------------------
+    # SI NO ENCONTRÓ NADA
+    # --------------------------------------------------------
 
     if len(partes) == 0:
         return "SIN_IDENTIFICAR"
