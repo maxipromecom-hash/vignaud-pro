@@ -22,9 +22,6 @@ def leer_imagen(api_key, ruta_imagen):
             )
 
         datos = respuesta.json()
-        print("=" * 80)
-        print(datos)
-        print("=" * 80)
         print("\n================ OCR =================")
         print(datos)
         print("======================================\n")
