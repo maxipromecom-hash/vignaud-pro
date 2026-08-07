@@ -101,21 +101,40 @@ def buscar_dominio(texto):
 
 def buscar_expediente(texto):
 
+    if not texto:
+        return ""
+
     texto = texto.upper()
 
     # --------------------------------------------------------
+    # NORMALIZAMOS ALGUNOS ERRORES FRECUENTES DEL OCR
+    # --------------------------------------------------------
+
+    texto = texto.replace("R°", "R")
+    texto = texto.replace("Rº", "R")
+
+    # --------------------------------------------------------
+    # PATRÓN PRINCIPAL
+    #
     # Acepta:
     #
     # R 1234/26
     # R-1234/26
     # R1234/26
-    # r-1234/26
-    # R-1234/25
+    # R-1234-26
+    # R 1234 / 26
+    # R - 1234 / 26
+    # R.1234/26
     #
-    # También acepta espacios alrededor.
+    # También permite números de hasta 6 dígitos.
     # --------------------------------------------------------
 
-    patron = r"\bR\s*[-]?\s*(\d{1,6})\s*[/\-]\s*(\d{2})\b"
+    patron = (
+        r"\bR\s*[-.:_]?\s*"
+        r"(\d{1,6})"
+        r"\s*[/\\-]\s*"
+        r"(\d{2})\b"
+    )
 
     encontrado = re.search(patron, texto)
 
@@ -126,8 +145,53 @@ def buscar_expediente(texto):
 
         return f"R-{numero}-{año}"
 
-    return ""
+    # --------------------------------------------------------
+    # SEGUNDA BÚSQUEDA
+    #
+    # OCR puede confundir:
+    #
+    # O -> 0
+    # I -> 1
+    # l -> 1
+    #
+    # Por eso buscamos una versión más flexible.
+    # --------------------------------------------------------
 
+    patron_ocr = (
+        r"\bR\s*[-.:_]?\s*"
+        r"([0-9OIL]{1,6})"
+        r"\s*[/\\-]\s*"
+        r"([0-9OIL]{2})\b"
+    )
+
+    encontrado = re.search(patron_ocr, texto)
+
+    if encontrado:
+
+        numero = encontrado.group(1)
+        año = encontrado.group(2)
+
+        # ----------------------------------------------------
+        # CORREGIR ERRORES OCR
+        # ----------------------------------------------------
+
+        numero = (
+            numero
+            .replace("O", "0")
+            .replace("I", "1")
+            .replace("L", "1")
+        )
+
+        año = (
+            año
+            .replace("O", "0")
+            .replace("I", "1")
+            .replace("L", "1")
+        )
+
+        return f"R-{numero}-{año}"
+
+    return ""
 
 # ============================================================
 # GENERAR NOMBRE
