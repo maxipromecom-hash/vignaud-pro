@@ -24,8 +24,32 @@ MARCAS = [
     "CERRO",
     "APPIA",
     "MAVERICK",
-    "MOTO MEL"
+    "MOTOMEL"
+    MARCAS = [
+    "HONDA",
+    "YAMAHA",
+    "MOTOMEL",
+    "MONDIAL",
+    "CORVEN",
+    "KELLER",
+    "GILERA",
+    "ZANELLA",
+    "JINCHENG",
+    "BRAVA",
+    "GUERRERO",
+    "KAWASAKI",
+    "SUZUKI",
+    "BAJAJ",
+    "KYMCO",
+    "CERRO",
+    "APPIA",
+    "MAVERICK",
+    "MOTO MEL",
+    "GARELLI",
+    "PUMA",
+    "CUADRO"
 ]
+
 
 
 # ============================================================
@@ -68,31 +92,78 @@ def buscar_modelo(texto):
 
 def buscar_dominio(texto):
 
+    if not texto:
+        return "SDOMINIO"
+
     texto = texto.upper()
 
-    # Dominio nuevo
-    patron1 = r"\b[A-Z]{2}[0-9]{3}[A-Z]{2}\b"
+    # --------------------------------------------------------
+    # PRIMERO BUSCAMOS INDICACIONES DE QUE NO HAY DOMINIO
+    # --------------------------------------------------------
 
-    # Dominio viejo
-    patron2 = r"\b[A-Z]{3}[0-9]{3}\b"
+    sin_dominio = [
+        "S/DOMINIO",
+        "S/Dominio",
+        "SIN DOMINIO",
+        "SIN/DOMINIO",
+        "NO POSEE DOMINIO",
+        "NO TIENE DOMINIO",
+        "NO POSEE",
+        "NO TIENE"
+    ]
 
-    dominio = re.search(patron1, texto)
+    for expresion in sin_dominio:
+
+        if expresion.upper() in texto:
+
+            return "SDOMINIO"
+
+    # --------------------------------------------------------
+    # DOMINIO NUEVO
+    #
+    # Ejemplo:
+    #
+    # AB123CD
+    # --------------------------------------------------------
+
+    patron_nuevo = r"\b[A-Z]{2}[0-9]{3}[A-Z]{2}\b"
+
+    dominio = re.search(
+        patron_nuevo,
+        texto
+    )
 
     if dominio:
+
         return dominio.group(0)
 
-    dominio = re.search(patron2, texto)
+    # --------------------------------------------------------
+    # DOMINIO VIEJO
+    #
+    # Ejemplo:
+    #
+    # ABC123
+    # --------------------------------------------------------
+
+    patron_viejo = r"\b[A-Z]{3}[0-9]{3}\b"
+
+    dominio = re.search(
+        patron_viejo,
+        texto
+    )
 
     if dominio:
+
         return dominio.group(0)
 
-    if "S/DOMINIO" in texto:
-        return "SDOMINIO"
+    # --------------------------------------------------------
+    # SI NO ENCONTRAMOS DOMINIO
+    #
+    # Para Vignaud PRO vamos a tratarlo como SDOMINIO.
+    # --------------------------------------------------------
 
-    if "SIN DOMINIO" in texto:
-        return "SDOMINIO"
+    return "SDOMINIO"
 
-    return ""
 
 
 # ============================================================
